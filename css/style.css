@@ -1,0 +1,16 @@
+.container {
+    width: 800px;
+    margin: 0 auto 0 auto;
+    text-align: center;
+}
+
+.box {
+    width: 50%;
+    float: left;
+}
+
+img {
+    margin: 20px;
+    max-width: 90%;
+}
+
