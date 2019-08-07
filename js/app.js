@@ -6,34 +6,34 @@ const CatClicker = (() => {
             this.numberOfClicks = 0;
             this.img = img;
         }
-
-        generateCatHTML() {
-            return `<div class="box">
-    <p>${this.name}</p>
-    <img  id="${this.name}" src="${this.img}">
-    <p id="${this.name}Clicks">Number of clicks : ${this.numberOfClicks}</p>
-</div>`;
-        }
-
-
     }
 
     function init(cats) {
 
+        let catList = document.getElementById('cat-list');
 
-        let container = document.querySelector('.container');
-        let catsHTML = "";
+        // We need to loop thru the cats and add the cat name to a list item
+        let catsListHTML = "";
         cats.forEach((cat) => {
-            catsHTML += cat.generateCatHTML();
-        });
-        container.innerHTML = catsHTML;
-
-        // Add click listeners
-        cats.forEach((cat) => {
-            document.getElementById(`${cat.name}`).addEventListener('click', () => {
-                cat.numberOfClicks ++;
-                document.getElementById(`${cat.name}Clicks`).innerText = `Number of clicks : ${cat.numberOfClicks}`
+            let li = document.createElement("LI");
+            li.innerText = cat.name;
+            li.addEventListener('click', () => {
+                let catImage = document.getElementById('cat-image');
+                catImage.setAttribute('src',cat.img);
+                catImage.setAttribute('data-name',cat.name);
+                let catName = document.getElementById('cat-name');
+                catName.innerText = cat.name;
+                let numberOfClicks = document.getElementById('number-of-clicks');
+                numberOfClicks.innerText = `Number of clicks : ${cat.numberOfClicks}`;
             });
+            catList.appendChild(li);
+        });
+
+        document.getElementById('cat-image').addEventListener('click', (event) => {
+            let cat = cats.find((cat) => cat.name === event.target.dataset.name);
+            cat.numberOfClicks ++;
+            let numberOfClicks = document.getElementById('number-of-clicks');
+            numberOfClicks.innerText = `Number of clicks : ${cat.numberOfClicks}`;
         });
     }
 
@@ -47,12 +47,8 @@ const CatClicker = (() => {
     };
 })();
 
-let catOne = CatClicker.cat("Sabre", "images/cat.jpg");
-let catTwo = CatClicker.cat("Viper", "images/cat2.png");
-let catThree = CatClicker.cat("Killer", "images/cat2.png");
-let cats = [];
-cats.push(catOne);
-cats.push(catTwo);
-cats.push(catThree);
+let cats = [CatClicker.cat("Sabre", "images/cat.jpg"), CatClicker.cat("Viper", "images/cat2.png"), CatClicker.cat("Killer", "images/cat3.png"), CatClicker.cat("Titan", "images/cat4.png"), CatClicker.cat("Satan", "images/cat5.png")];
 
 CatClicker.init(cats);
+
+

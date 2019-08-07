@@ -1,16 +1,21 @@
 .container {
     width: 800px;
     margin: 0 auto 0 auto;
-    text-align: center;
+    text-align: left;
 }
 
-.box {
-    width: 50%;
+.list {
+    width: 20%;
     float: left;
 }
 
+.box {
+    width: 70%;
+    float: left;
+    text-align: center;
+}
+
 img {
-    margin: 20px;
-    max-width: 90%;
+    max-width: 100%;
 }
 
