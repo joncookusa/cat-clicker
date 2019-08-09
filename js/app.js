@@ -1,54 +1,160 @@
-const CatClicker = (() => {
-    class cat {
+class Cat {
+    constructor(name, img) {
+        this.name = name;
+        this.numberOfClicks = 0;
+        this.img = img;
+    }
+}
 
-        constructor(name, img) {
-            this.name = name;
-            this.numberOfClicks = 0;
-            this.img = img;
+class Model {
+    cats = [];
+    currentCat;
+
+    add(cat) {
+        this.cats.push(new Cat(cat.name, cat.img));
+    }
+}
+
+class Controller {
+
+    model = new Model();
+    viewList = new ViewList(this);
+    viewCat = new ViewCat(this);
+    viewAdmin = new ViewAdmin(this);
+
+    init(cats) {
+        cats.forEach((cat) => {
+            this.model.add(cat);
+        });
+        this.setCurrentCat(this.model.cats[0]);
+        this.updateCat();
+    }
+
+    getCats() {
+        return this.model.cats;
+    }
+
+    getCurrentCat() {
+        return this.model.currentCat;
+    }
+
+    setCurrentCat(cat) {
+        this.model.currentCat = cat;
+        this.viewCat.render();
+        this.closeViewAdminForm();
+    }
+
+    closeViewAdminForm() {
+        if (this.viewAdmin.adminOpen) {
+            this.viewAdmin.closeForm();
         }
     }
 
-    function init(cats) {
+    showViewAdminForm() {
+        if (!this.viewAdmin.adminOpen) {
+            ViewAdmin.render();
+            this.viewAdmin.showForm();
+        }
+    }
 
+    clickedCat() {
+        this.model.currentCat.numberOfClicks++;
+        this.viewCat.render(this.model.currentCat);
+        this.closeViewAdminForm();
+    }
+
+
+
+    updateCat() {
+        this.viewList.render();
+        this.viewCat.render();
+
+    }
+}
+
+class ViewList {
+
+    controller;
+
+    constructor(controller) {
+        this.controller = controller;
+    };
+
+    render() {
         let catList = document.getElementById('cat-list');
-
-        // We need to loop thru the cats and add the cat name to a list item
-        let catsListHTML = "";
-        cats.forEach((cat) => {
+        catList.innerHTML = '';
+        controller.getCats().forEach((cat) => {
             let li = document.createElement("LI");
             li.innerText = cat.name;
-            li.addEventListener('click', () => {
-                let catImage = document.getElementById('cat-image');
-                catImage.setAttribute('src',cat.img);
-                catImage.setAttribute('data-name',cat.name);
-                let catName = document.getElementById('cat-name');
-                catName.innerText = cat.name;
-                let numberOfClicks = document.getElementById('number-of-clicks');
-                numberOfClicks.innerText = `Number of clicks : ${cat.numberOfClicks}`;
-            });
+            li.addEventListener('click', ((cat) => {
+                return function() {
+                    controller.setCurrentCat(cat);
+                };
+            })(cat));
             catList.appendChild(li);
         });
+    }
+}
 
+class ViewCat {
+
+    constructor(controller) {
+        this.controller = controller;
         document.getElementById('cat-image').addEventListener('click', (event) => {
-            let cat = cats.find((cat) => cat.name === event.target.dataset.name);
-            cat.numberOfClicks ++;
-            let numberOfClicks = document.getElementById('number-of-clicks');
-            numberOfClicks.innerText = `Number of clicks : ${cat.numberOfClicks}`;
+            this.controller.clickedCat();
         });
     }
 
-    return {
-        init: (cats) => {
-            init(cats);
-        },
-        cat: (name, img) => {
-            return new cat(name, img);
-        }
-    };
-})();
+    render() {
+        let cat = this.controller.getCurrentCat();
+        document.getElementById('cat-image').setAttribute('src',cat.img);
+        document.getElementById('cat-name').innerText = cat.name;
+        document.getElementById('number-of-clicks').innerText = `Number of clicks : ${cat.numberOfClicks}`;
+    }
 
-let cats = [CatClicker.cat("Sabre", "images/cat.jpg"), CatClicker.cat("Viper", "images/cat2.png"), CatClicker.cat("Killer", "images/cat3.png"), CatClicker.cat("Titan", "images/cat4.png"), CatClicker.cat("Satan", "images/cat5.png")];
+}
 
-CatClicker.init(cats);
+class ViewAdmin {
 
+    static render() {
+        document.getElementById('name').value = controller.getCurrentCat().name;
+        document.getElementById('imageurl').value = controller.getCurrentCat().img;
+        document.getElementById('clicks').value = controller.getCurrentCat().numberOfClicks;
+    }
 
+    constructor(controller) {
+        this.controller = controller;
+        this.adminOpen = false;
+        this.adminForm = document.getElementById('admin-form');
+        document.getElementById('admin-button').addEventListener('click', () => {
+            this.controller.showViewAdminForm();
+        });
+        document.getElementById('save').addEventListener('click', () => {
+            this.controller.getCurrentCat().name = document.getElementById('name').value;
+            this.controller.getCurrentCat().img = document.getElementById('imageurl').value;
+            this.controller.getCurrentCat().numberOfClicks = document.getElementById('clicks').value;
+            this.controller.updateCat();
+            this.controller.closeViewAdminForm();
+        });
+
+        document.getElementById('cancel').addEventListener('click', () => {
+            this.controller.closeViewAdminForm();
+        });
+    }
+
+    closeForm() {
+        this.adminForm.classList.remove('show');
+        this.adminForm.classList.add('hidden');
+        this.adminOpen = false;
+    }
+
+    showForm() {
+        this.adminForm.classList.remove('hidden');
+        this.adminForm.classList.add('show');
+        this.adminOpen = true;
+    }
+
+}
+
+controller = new Controller();
+controller.init([{name: "Sabre", img: "images/cat.jpg"},{name: "Viper", img : "images/cat2.png"},{name: "Satan", img: "images/cat3.png"},{name: "Killer", img: "images/cat4.png"},{name: "Titan", img: "images/cat5.png"},{name: "Cassius", img: "images/cat2.png"}]);
