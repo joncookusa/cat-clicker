@@ -1,7 +1,7 @@
 # Cat Clicker Project
 
 ### Reasoning
-The cat clicker is an example project to demonstrate seperations of concerns in the Javascript programming language. The concerns being a model, view and 
+The cat clicker is an example project to demonstrate separations of concerns in the Javascript programming language. The concerns being a model, view and 
 octopus (or controller, or what ever "middle man" name you would like to use). The applications separates these concerns in the app.js 
 file, to make the application more scalable and maintainable as the requirements change.
 
